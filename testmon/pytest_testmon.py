@@ -217,6 +217,8 @@ def changed_message(
             )
     if config.testmon_data.environment:
         message += f"environment: {environment}"
+    if config.testmon_data.az_endpoint:
+        message += f", az endpoint: {config.testmon_data.az_endpoint}"
     return message
 
 

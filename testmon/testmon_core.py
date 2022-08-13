@@ -144,7 +144,7 @@ def get_measured_relfiles(rootdir, cov, test_file):
 
 
 class TestmonData:
-    def __init__(self, rootdir="", environment=None, libraries=None):
+    def __init__(self, rootdir="", environment=None, libraries=None, az_endpoint=None):
 
         self.environment = environment if environment else "default"
         self.rootdir = rootdir
@@ -158,8 +158,21 @@ class TestmonData:
         self.libraries = libraries
 
         self.connection = None
-        self.datafile = get_data_file_path(self.rootdir)
-        self.db = db.DB(self.datafile, self.environment)
+
+        self.az_endpoint = os.getenv("TESTMON_AZ_ENDPOINT_URL")
+
+        if self.az_endpoint:
+            az_endpoint = os.getenv("TESTMON_AZ_ENDPOINT_URL")
+            az_sas = os.environ["TESTMON_AZ_SAS"]
+
+            from azure.core.credentials import AzureSasCredential
+            from testmon import azdb
+
+            credential = AzureSasCredential(az_sas)
+            self.db = azdb.AzDB(az_endpoint, credential)
+        else:
+            self.datafile = get_data_file_path(self.rootdir)
+            self.db = db.DB(self.datafile, self.environment)
 
         self.libraries_miss = set()
         self.unstable_nodeids = set()

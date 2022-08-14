@@ -340,7 +340,8 @@ class AzDB:
 
         ops = []
         for nodeid in nodeids:
-            ops.append(("delete", {"PartitionKey": self.env, "RowKey": nodeid}))
+            node_id  =base64.b64encode(nodeid.encode()).decode()
+            ops.append(("delete", {"PartitionKey": self.env, "RowKey": node_id}))
 
         with self.create_table_service_client() as table_service, table_service.get_table_client(
             "node"
